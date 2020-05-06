@@ -1,1 +1,0 @@
-/usr/bin/c++      CMakeFiles/SockSock.dir/Sources/Client.cpp.o  -o SockSock -rdynamic 
