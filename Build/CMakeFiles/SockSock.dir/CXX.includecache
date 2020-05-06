@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../Headers/CommonDef.h
+
+/root/program/CPP/SockSock/Sources/Client.cpp
+iostream
+-
+CommonDef.h
+/root/program/CPP/SockSock/Sources/CommonDef.h
+

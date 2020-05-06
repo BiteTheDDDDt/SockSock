@@ -6,9 +6,9 @@ Server::Server()
     try
     {
         //socket信息设置
-        server_socket.sin_family=PF_INET;//随便设置
-        server_socket.sin_port=htons(CDEF::server_port);//设置端口
-        server_socket.sin_addr.s_addr=inet_addr(CDEF::server_ip);//设置IP
+        server_socket.sin_family=PF_INET;//设置模式
+        server_socket.sin_port=htons(CDEF::SERVER_PORT);//设置端口
+        server_socket.sin_addr.s_addr=inet_addr(CDEF::SERVER_IP);//设置IP
 
         //生成socket
         std::cout<<"server initing..."<<std::endl;
@@ -90,11 +90,11 @@ bool Server::start()
                     std::cout << "Now there are " << clients.size() << " clients int the chat room" << std::endl;
     
                     // 服务端发送欢迎信息  
-                    std::cout << "welcome message" << std::endl;
                     char message[CDEF::BUFF_SIZE];
-                    bzero(message, CDEF::BUFF_SIZE);
-                    sprintf(message, "SERVER_WELCOME %d", clientfd);
-                    if(send(clientfd, message, CDEF::BUFF_SIZE, 0)==-1)throw errno;
+                    memset(message,0,sizeof(message));
+                    sprintf(message, "welcome user%d.", clientfd);
+                    std::cout << "welcome message:" <<message<< std::endl;
+                    if(send(clientfd, message, strlen(message), 0)==-1)throw errno;
                 }
                 //处理用户发来的消息，并广播，使其他用户收到信息
                 else
@@ -113,5 +113,61 @@ bool Server::start()
 }
 int Server::sendBroadcast(int clientfd)
 {
-
+    // buf[BUF_SIZE] 接收新消息
+    // message[BUF_SIZE] 保存格式化的消息
+    char recv_buff[CDEF::BUFF_SIZE];
+    char send_buff[CDEF::BUFF_SIZE];
+    CDEF::Messege msg;
+    memset(recv_buff,0,sizeof(recv_buff));
+    // 接收新消息
+    std::cout << "read from client(clientID = " << clientfd << ")" << std::endl;
+    int len = recv(clientfd, recv_buff, sizeof(recv_buff), 0);
+    //清空结构体，把接受到的字符串转换为结构体
+    memset(&msg,0,sizeof(msg));
+    memcpy(&msg,recv_buff,sizeof(msg));
+    //判断接受到的信息是私聊还是群聊
+    msg.fromID=clientfd;
+    if(msg.content[0]=='\\'&&isdigit(msg.content[1]))
+    {
+        msg.type=1;
+        msg.toID=msg.content[1]-'0';
+        memcpy(msg.content,msg.content+2,sizeof(msg.content));
+    }
+    else msg.type=0;
+    // 如果客户端关闭了连接
+    if(len == 0) 
+    {
+        ::close(clientfd);
+        
+        // 在客户端列表中删除该客户端
+        clients.remove(clientfd);
+        std::cout << "ClientID = " << clientfd 
+             << " closed.\n now there are " 
+             << clients.size()
+             << " client in the char room"
+             << std::endl;
+ 
+    }
+    // 发送广播消息给所有客户端
+    else 
+    {
+        //存放格式化后的信息
+        char format_message[CDEF::BUFF_SIZE];
+        //群聊
+        if(msg.type==0)
+        {
+            // 格式化发送的消息内容 #define SERVER_MESSAGE "ClientID %d say >> %s"
+            sprintf(format_message, "ClientID %d say >> %s", clientfd, msg.content);
+            memcpy(msg.content,format_message,sizeof(msg.content));
+            // 遍历客户端列表依次发送消息，需要判断不要给来源客户端发
+            for(auto it = clients.begin(); it != clients.end(); ++it)
+            {
+                //把发送的结构体转换为字符串
+                memset(send_buff,0,sizeof(send_buff));
+                memcpy(send_buff,&msg,sizeof(msg));
+                if( send(*it,send_buff, sizeof(send_buff), 0) < 0 )return -1;
+            }
+        }
+    }
+    return len;
 }

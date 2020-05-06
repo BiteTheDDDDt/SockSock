@@ -23,8 +23,8 @@
 
 namespace CDEF//公共定义常量/函数
 {
-    const int server_port=18888; //服务端默认端口
-    const char server_ip[]="127.0.0.1";//服务端公网IP
+    const int SERVER_PORT=18888; //服务端默认端口
+    const char SERVER_IP[]="127.0.0.1";//服务端公网IP
     //114.55.95.144
     const int EPOLL_SIZE=1024;
     const int BUFF_SIZE=1024;

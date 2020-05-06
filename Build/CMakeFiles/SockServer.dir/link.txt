@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/SockServer.dir/Sources/ServerMain.cpp.o CMakeFiles/SockServer.dir/Sources/Server.cpp.o  -o SockServer -rdynamic 

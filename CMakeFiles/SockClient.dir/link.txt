@@ -1,0 +1,1 @@
+/usr/bin/g++-5   -g   CMakeFiles/SockClient.dir/Sources/ClientMain.cpp.o CMakeFiles/SockClient.dir/Sources/Client.cpp.o  -o SockClient -rdynamic 
