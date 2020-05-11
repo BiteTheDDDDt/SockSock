@@ -142,7 +142,7 @@ void Client::start()
                         } 
                         else
                         {
-                            std::cout << msg.content << std::endl;
+                            std::cout << msg.content;
                         }
                     }
                     //子进程写入事件发生，父进程处理并发送服务端

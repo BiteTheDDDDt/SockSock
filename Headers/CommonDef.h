@@ -56,9 +56,6 @@ namespace CDEF//公共定义常量/函数
     }
     struct Messege//定义信息结构，在服务端和客户端之间传送
     {
-        int type;
-        int fromID;
-        int toID;
         char content[BUFF_SIZE];
     };
 }
