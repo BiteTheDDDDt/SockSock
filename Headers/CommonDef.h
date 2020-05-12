@@ -28,9 +28,8 @@ namespace CDEF//公共定义常量/函数
     //114.55.95.144
     const int EPOLL_SIZE=1024;
     const int BUFF_SIZE=1024;
-
+    
     //输出debug信息
-
     static void deBug(const std::string& file,const std::string& func,int err,const std::string& desc="none")
     {
         std::cout<<"---deBug---"<<std::endl;
