@@ -52,8 +52,7 @@ namespace CDEF //公共定义常量/函数
         // 套接字立刻返回，不管I/O是否完成，该函数所在的线程会继续运行
         //eg. 在recv(fd...)时，该函数立刻返回，在返回时，内核数据还没准备好会返回WSAEWOULDBLOCK错误代码
         fcntl(fd, F_SETFL, fcntl(fd, F_GETFD, 0) | O_NONBLOCK);
-        std::cout << "fd:" << fd << " "
-                  << "added to epoll" << std::endl;
+        //std::cout << "fd:" << fd << " added to epoll" << std::endl;
     }
     struct Messege //定义信息结构，在服务端和客户端之间传送
     {
