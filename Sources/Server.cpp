@@ -11,12 +11,12 @@ Server::Server()
         server_socket.sin_addr.s_addr = inet_addr(CDEF::SERVER_IP); //设置IP
 
         //生成socket
-        std::cout << "server initing..." << std::endl;
+        std::cout << "Server initing..." << std::endl;
         listener = socket(PF_INET, SOCK_STREAM, 0);
         if (listener < 0)
             throw errno;
 
-        std::cout << "server binding..." << std::endl;
+        //std::cout << "Server binding..." << std::endl;
         //绑定信息
         if (bind(listener, (sockaddr *)(&server_socket), sizeof(server_socket)) == -1)
             throw errno;
@@ -24,10 +24,10 @@ Server::Server()
         //开始监听
         if (listen(listener, 5) < 0)
             throw errno;
-        std::cout << "server listening..." << std::endl;
+        //std::cout << "Server listening..." << std::endl;
 
         //在内核中创建事件表 epfd是一个句柄
-        std::cout << "epoll creating..." << std::endl;
+        //std::cout << "Epoll creating..." << std::endl;
         epoll_fd = epoll_create(10);
         if (epoll_fd < 0)
             throw errno;
@@ -35,7 +35,7 @@ Server::Server()
         //往事件表里添加监听事件
         CDEF::addFd(epoll_fd, listener, true);
         CDEF::addFd(epoll_fd, 0, true); //0为标准输入流 用来监控退出
-        std::cout << "server inited." << std::endl;
+        std::cout << "Server inited." << std::endl;
     }
     catch (int err)
     {
@@ -63,7 +63,7 @@ bool Server::start()
     const std::string funcname = "start()";
     epoll_event events[CDEF::EPOLL_SIZE]; //epoll事件队列
 
-    std::cout << "server started" << std::endl;
+    std::cout << "Server started" << std::endl;
     //main loop
     CDEF::Messege msg;
     try
@@ -88,7 +88,7 @@ bool Server::start()
                     socklen_t client_addrLength = sizeof(struct sockaddr_in);
                     int client_fd = accept(listener, (sockaddr *)&client_address, &client_addrLength);
 
-                    std::cout << "connection from: "
+                    std::cout << "Connection from: "
                               << inet_ntoa(client_address.sin_addr) << ":"
                               << ntohs(client_address.sin_port) << std::endl;
 
@@ -97,17 +97,18 @@ bool Server::start()
                     // 服务端用list保存用户连接
                     clients.push_back(client_fd);
 
+                    std::cout << "Client " << client_fd << " coming." << std::endl;
                     // 服务端发送欢迎信息
                     sprintf(buff, "Server: Client %d coming.\n", client_fd);
                     memcpy(msg.content, buff, sizeof(msg.content));
-                    sendMessage(msg);
+                    broadcastMessage(msg);
                 }
                 else if (sock_fd == 0) //标准IO
                 {
                     clearBuff();
                     if (read(0, buff, sizeof(buff)) > 0)
                     {
-                        std::cout << "standrad server quit." << std::endl;
+                        std::cout << "Standrad server quit." << std::endl;
                         isRunning = false;
                         break;
                     }
@@ -119,7 +120,7 @@ bool Server::start()
                         //格式化消息
                         sprintf(buff, "Client %d: %s", sock_fd, msg.content);
                         memcpy(msg.content, buff, sizeof(msg.content));
-                        sendMessage(msg);
+                        broadcastMessage(msg);
                     }
                     else //断开连接
                     {
@@ -139,17 +140,20 @@ bool Server::start()
     // 关闭服务
     return close();
 }
-bool Server::sendMessage(CDEF::Messege msg)
+void Server::broadcastMessage(CDEF::Messege msg)
 {
-    //std::cout<<"send:"<<msg.content<<std::endl;
-    // 遍历客户端列表依次发送消息，需要判断不要给来源客户端发
     for (int client : clients)
     {
-        //把发送的结构体转换为字符串
-        if (send(client, msg.content, sizeof(msg.content), 0) < 0)
-            return false;
+        if (!sendMessage(client, msg))
+        {
+            std::cout << "Client " << client << " can't receive message." << std::endl;
+        }
     }
-    return true;
+}
+bool Server::sendMessage(int client_fd, CDEF::Messege msg)
+{
+    //std::cout<<"send:"<<msg.content<<std::endl;
+    return (send(client_fd, msg.content, sizeof(msg.content), 0) >= 0);
 }
 bool Server::recvMessage(int client_fd, CDEF::Messege &msg)
 {

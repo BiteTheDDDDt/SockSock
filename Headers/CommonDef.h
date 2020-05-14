@@ -40,14 +40,14 @@ namespace CDEF //公共定义常量/函数
         std::cout << "----------" << std::endl;
     }
 
-    static void addFd(int epollfd, int fd, bool enable_et)
+    static void addFd(int epoll_fd, int fd, bool enable_et)
     {
         epoll_event ev;
         ev.data.fd = fd;
         ev.events = EPOLLIN;
         if (enable_et)
             ev.events = EPOLLIN | EPOLLET;
-        epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
+        epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &ev);
         // 设置socket为非阻塞模式
         // 套接字立刻返回，不管I/O是否完成，该函数所在的线程会继续运行
         //eg. 在recv(fd...)时，该函数立刻返回，在返回时，内核数据还没准备好会返回WSAEWOULDBLOCK错误代码

@@ -4,7 +4,7 @@
 
 int main()
 {
-    std::cout << "task starting..." << std::endl;
+    //std::cout << "task starting..." << std::endl;
     Client clie = Client();
     if (clie.initConnection())
     {
@@ -12,8 +12,8 @@ int main()
     }
     else
     {
-        std::cout << "connect fault." << std::endl;
+        std::cout << "Connect fault." << std::endl;
     }
-    std::cout << "task endding..." << std::endl;
+    //std::cout << "task endding..." << std::endl;
     return 0;
 }
