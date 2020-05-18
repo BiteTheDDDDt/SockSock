@@ -84,8 +84,7 @@ void Client::start()
         {
             // 进入子进程执行流程
             ::close(pipe_fd[0]);
-            std::cout << "Please input 'exit' to exit the chat room" << std::endl;
-            std::cout << "\\ + ClientID to private chat " << std::endl;
+            std::cout << "Please input 'EXIT' to exit the chat room" << std::endl;
             // 如果客户端运行正常则不断读取输入发送给服务端
             while (isClientwork)
             {

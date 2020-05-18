@@ -46,11 +46,6 @@ Server::~Server()
 {
     close();
 }
-
-void Server::clearBuff()
-{
-    memset(buff, 0, sizeof(buff));
-}
 bool Server::close()
 {
     ::close(listener);
@@ -105,7 +100,6 @@ bool Server::start()
                 }
                 else if (sock_fd == 0) //标准IO
                 {
-                    clearBuff();
                     if (read(0, buff, sizeof(buff)) > 0)
                     {
                         std::cout << "Standrad server quit." << std::endl;
@@ -158,7 +152,6 @@ bool Server::sendMessage(int client_fd, CDEF::Messege msg)
 bool Server::recvMessage(int client_fd, CDEF::Messege &msg)
 {
     //std::cout << "read from client(clientID = " << client_fd << ")" << std::endl;
-    clearBuff();
     if (recv(client_fd, buff, sizeof(buff), 0) > 0)
     {
         memcpy(&msg, buff, sizeof(msg));

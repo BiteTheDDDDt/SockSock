@@ -16,7 +16,6 @@ private:
     bool sendMessage(int client_fd, CDEF::Messege msg);
     void broadcastMessage(CDEF::Messege msg);
     char buff[CDEF::BUFF_SIZE];
-    void clearBuff();
 
 public:
     Server();
