@@ -1,4 +1,0 @@
-/root/program/CPP/SockSock/CMakeFiles/rebuild_cache.dir
-/root/program/CPP/SockSock/CMakeFiles/edit_cache.dir
-/root/program/CPP/SockSock/CMakeFiles/SockServer.dir
-/root/program/CPP/SockSock/CMakeFiles/SockClient.dir
