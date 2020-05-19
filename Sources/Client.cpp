@@ -67,9 +67,6 @@ void Client::start()
     const std::string funcname = "start()";
     // epoll 事件队列
     static struct epoll_event events[2];
-    //结构体要转换为字符串
-    char send_buff[CDEF::BUFF_SIZE];
-    char recv_buff[CDEF::BUFF_SIZE];
     CDEF::Messege msg;
     try
     {
@@ -100,10 +97,10 @@ void Client::start()
                 {
                     // 子进程将信息写入管道
                     //清空发送缓存
-                    memset(send_buff, 0, sizeof(send_buff));
+                    memset(buff, 0, sizeof(buff));
                     //结构体转换为字符串
-                    memcpy(send_buff, &msg, sizeof(msg));
-                    if (write(pipe_fd[1], send_buff, sizeof(send_buff)) < 0)
+                    memcpy(buff, &msg, sizeof(msg));
+                    if (write(pipe_fd[1], buff, sizeof(buff)) < 0)
                         throw errno;
                 }
             }
@@ -121,16 +118,16 @@ void Client::start()
                 //处理就绪事件
                 for (int i = 0; i < epoll_events_count; i++)
                 {
-                    memset(recv_buff, 0, sizeof(recv_buff));
+                    memset(buff, 0, sizeof(buff));
                     //服务端发来消息
                     if (events[i].data.fd == sock)
                     {
                         //接受服务端广播消息
-                        int res = recv(sock, recv_buff, sizeof(recv_buff), 0);
+                        int res = recv(sock, buff, sizeof(buff), 0);
                         //清空结构体
                         memset(&msg, 0, sizeof(msg));
                         //将发来的消息转换为结构体
-                        memcpy(&msg, recv_buff, sizeof(msg));
+                        memcpy(&msg, buff, sizeof(msg));
 
                         // res= 0 服务端关闭
                         if (res == 0)
@@ -148,7 +145,7 @@ void Client::start()
                     else
                     {
                         //父进程从管道中读取数据
-                        int res = read(events[i].data.fd, recv_buff, sizeof(recv_buff));
+                        int res = read(events[i].data.fd, buff, sizeof(buff));
                         // ret = 0
                         if (res == 0)
                         {
@@ -157,7 +154,7 @@ void Client::start()
                         else
                         {
                             // 将从管道中读取的字符串信息发送给服务端
-                            send(sock, recv_buff, sizeof(recv_buff), 0);
+                            send(sock, buff, sizeof(buff), 0);
                         }
                     }
                 }

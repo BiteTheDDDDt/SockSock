@@ -30,10 +30,14 @@
 *.exe
 *.out
 *.app
+*.json
+*.cmake
 
-#忽略
-.vscode/
 Build/CMakeFiles/
 Build/cmake_install.cmake
 Build/CMakeCache.txt
 Build/Makefile
+CMakeFiles
+Makefile
+cmake_install
+CMakeCache.txt

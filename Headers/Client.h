@@ -12,6 +12,8 @@ private:
     int pipe_fd[2];            // 创建管道，其中fd[0]用于父进程读，fd[1]用于子进程写
     bool isClientwork;         //表示客户端是否正常工作
     sockaddr_in server_socket; //用于存放服务器ip和端口的结构
+    char buff[CDEF::BUFF_SIZE];
+
 public:
     Client();
     ~Client();
